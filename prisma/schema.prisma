@@ -1,0 +1,25 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider     = "mysql"
+  relationMode = "prisma"
+}
+
+enum Role {
+  USER
+  ADMIN
+  SELLER
+}
+
+model User {
+  id    String @id @default(uuid())
+  name  String
+  email String @unique
+  role  Role   @default(USER)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
