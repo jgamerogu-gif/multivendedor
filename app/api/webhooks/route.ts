@@ -1,6 +1,8 @@
-import { Webhook } from "svix";
 import { headers } from "next/headers";
 import type { WebhookEvent } from "@clerk/nextjs/server";
+import { Webhook } from "svix";
+
+import { db } from "@/lib/db";
 
 export async function POST(req: Request) {
   const webhookSecret = process.env.CLERK_WEBHOOK_SECRET;
@@ -11,7 +13,7 @@ export async function POST(req: Request) {
     });
   }
 
-  // En Next.js 16, headers() es asíncrono
+  // Obtenemos los encabezados enviados por Svix.
   const headerPayload = await headers();
 
   const svixId = headerPayload.get("svix-id");
@@ -24,6 +26,7 @@ export async function POST(req: Request) {
     });
   }
 
+  // Leemos el cuerpo original del webhook.
   const payload = await req.text();
 
   const webhook = new Webhook(webhookSecret);
@@ -44,19 +47,67 @@ export async function POST(req: Request) {
     });
   }
 
-  const eventType = event.type;
+  try {
+    if (event.type === "user.created" || event.type === "user.updated") {
+      const data = event.data;
 
-  if (eventType === "user.created" || eventType === "user.updated") {
-    console.log("Tipo de evento:", eventType);
-    console.log("ID del usuario:", event.data.id);
-    console.log("Datos del usuario:", event.data);
+      // Buscamos el correo principal del usuario.
+      const primaryEmail = data.email_addresses.find(
+        (emailAddress) =>
+          emailAddress.id === data.primary_email_address_id,
+      );
+
+      const email =
+        primaryEmail?.email_address ??
+        data.email_addresses[0]?.email_address;
+
+      if (!email) {
+        return new Response("El usuario no tiene correo electrónico", {
+          status: 400,
+        });
+      }
+
+      // Unimos nombre y apellido.
+      const name =
+        [data.first_name, data.last_name]
+          .filter(Boolean)
+          .join(" ") || "Usuario";
+
+      const user = {
+        name,
+        email,
+      };
+
+      const dbUser = await db.user.upsert({
+        where: {
+          email: user.email,
+        },
+        update: {
+          name: user.name,
+        },
+        create: {
+          ...user,
+          role: "USER",
+        },
+      });
+
+      console.log("Tipo de evento:", event.type);
+      console.log("Usuario guardado en MySQL:", dbUser);
+    }
+
+    if (event.type === "user.deleted") {
+      console.log("Usuario eliminado en Clerk:", event.data.id);
+    }
+
+    return new Response("Webhook recibido correctamente", {
+      status: 200,
+    });
+  } catch (error) {
+    console.error("Error trabajando con la base de datos:", error);
+
+    return new Response("Error al guardar el usuario en MySQL", {
+      status: 500,
+    });
   }
-
-  if (eventType === "user.deleted") {
-    console.log("Usuario eliminado:", event.data.id);
-  }
-
-  return new Response("Webhook recibido correctamente", {
-    status: 200,
-  });
 }
+
