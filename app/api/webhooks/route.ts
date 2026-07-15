@@ -1,5 +1,6 @@
-import { headers } from "next/headers";
+import { clerkClient } from "@clerk/nextjs/server";
 import type { WebhookEvent } from "@clerk/nextjs/server";
+import { headers } from "next/headers";
 import { Webhook } from "svix";
 
 import { db } from "@/lib/db";
@@ -13,7 +14,6 @@ export async function POST(req: Request) {
     });
   }
 
-  // Obtenemos los encabezados enviados por Svix.
   const headerPayload = await headers();
 
   const svixId = headerPayload.get("svix-id");
@@ -26,9 +26,7 @@ export async function POST(req: Request) {
     });
   }
 
-  // Leemos el cuerpo original del webhook.
   const payload = await req.text();
-
   const webhook = new Webhook(webhookSecret);
 
   let event: WebhookEvent;
@@ -51,7 +49,6 @@ export async function POST(req: Request) {
     if (event.type === "user.created" || event.type === "user.updated") {
       const data = event.data;
 
-      // Buscamos el correo principal del usuario.
       const primaryEmail = data.email_addresses.find(
         (emailAddress) =>
           emailAddress.id === data.primary_email_address_id,
@@ -67,47 +64,74 @@ export async function POST(req: Request) {
         });
       }
 
-      // Unimos nombre y apellido.
       const name =
         [data.first_name, data.last_name]
           .filter(Boolean)
           .join(" ") || "Usuario";
 
-      const user = {
-        name,
-        email,
-      };
-
       const dbUser = await db.user.upsert({
         where: {
-          email: user.email,
+          clerkId: data.id,
         },
+
         update: {
-          name: user.name,
+          name,
+          email,
         },
+
         create: {
-          ...user,
+          clerkId: data.id,
+          name,
+          email,
           role: "USER",
         },
       });
 
-      console.log("Tipo de evento:", event.type);
-      console.log("Usuario guardado en MySQL:", dbUser);
+      /*
+       * Evitamos actualizar Clerk repetidamente.
+       * Actualizar metadata puede producir otro evento user.updated.
+       */
+      const currentRole = data.private_metadata?.role;
+
+      if (currentRole !== dbUser.role) {
+        const client = await clerkClient();
+
+        await client.users.updateUserMetadata(data.id, {
+          privateMetadata: {
+            role: dbUser.role,
+          },
+        });
+      }
+
+      console.log("Usuario sincronizado:", dbUser);
     }
 
     if (event.type === "user.deleted") {
-      console.log("Usuario eliminado en Clerk:", event.data.id);
+      const clerkId = event.data.id;
+
+      if (!clerkId) {
+        return new Response("El evento no contiene el ID del usuario", {
+          status: 400,
+        });
+      }
+
+      const result = await db.user.deleteMany({
+        where: {
+          clerkId,
+        },
+      });
+
+      console.log("Usuarios eliminados:", result.count);
     }
 
-    return new Response("Webhook recibido correctamente", {
+    return new Response("Webhook procesado correctamente", {
       status: 200,
     });
   } catch (error) {
-    console.error("Error trabajando con la base de datos:", error);
+    console.error("Error sincronizando el usuario:", error);
 
-    return new Response("Error al guardar el usuario en MySQL", {
+    return new Response("Error al acceder a la base de datos", {
       status: 500,
     });
   }
 }
-
