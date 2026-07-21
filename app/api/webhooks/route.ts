@@ -37,13 +37,17 @@ export async function POST(req: Request) {
       "svix-timestamp": svixTimestamp,
       "svix-signature": svixSignature,
     }) as WebhookEvent;
-  } catch (error) {
-    console.error("Error verificando el webhook:", error);
+} catch (error) {
+  console.error("========== ERROR SVIX ==========");
+  console.error(error);
 
-    return new Response("Firma del webhook inválida", {
-      status: 400,
-    });
-  }
+  return Response.json(
+    {
+      error: String(error),
+    },
+    { status: 400 }
+  );
+}
 
   try {
     if (event.type === "user.created" || event.type === "user.updated") {
