@@ -3,5 +3,5 @@ export default function SellerLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  return <div>{children}</div>;
 }
