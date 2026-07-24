@@ -1,16 +1,30 @@
-import { currentUser } from "@clerk/nextjs/server";
+import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 
 import Header from "@/components/dashboard/header/header";
+import { db } from "@/lib/db";
 
 export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const user = await currentUser();
+  const { userId } = await auth();
 
-  if (!user || user.privateMetadata?.role !== "ADMIN") {
+  if (!userId) {
+    redirect("/sign-in");
+  }
+
+  const dbUser = await db.user.findUnique({
+    where: {
+      clerkId: userId,
+    },
+    select: {
+      role: true,
+    },
+  });
+
+  if (!dbUser || dbUser.role !== "ADMIN") {
     redirect("/");
   }
 
