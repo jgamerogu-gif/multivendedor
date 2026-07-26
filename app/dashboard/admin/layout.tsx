@@ -1,5 +1,6 @@
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
+import Sidebar from "@/components/dashboard/sidebar/sidebar";
 
 import Header from "@/components/dashboard/header/header";
 import { db } from "@/lib/db";
@@ -29,14 +30,19 @@ export default async function AdminLayout({
   }
 
   return (
-    <div className="min-h-screen w-full">
-      <Header />
+   <div className="min-h-screen w-full">
+  
+   <Sidebar isAdmin={dbUser.role === "ADMIN"} />
 
-      <div className="w-full md:ml-75">
-        <main className="mt-[75px] p-4">
-          {children}
-        </main>
-      </div>
-    </div>
+  <Header />
+
+  <Sidebar isAdmin={true} />
+
+  <div className="w-full md:ml-75">
+    <main className="mt-[75px] p-4">
+      {children}
+    </main>
+  </div>
+</div>
   );
 }
