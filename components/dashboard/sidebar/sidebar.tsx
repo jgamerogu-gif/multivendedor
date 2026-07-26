@@ -64,33 +64,23 @@ const Sidebar = async ({ isAdmin }: SidebarProps) => {
   return (
     <>
       {/* MÓVIL */}
-      <aside className="w-full bg-background px-4 pb-6 pt-5 md:hidden">
-        <div
-          className="
-            mx-auto flex w-full max-w-sm
-            flex-col items-center
-            rounded-2xl border
-            bg-card p-5
-            shadow-sm
-          "
-        >
-          {/* Logo */}
-          <div className="flex justify-center">
-            <Logo width="120px" height="120px" />
-          </div>
+     <aside className="w-full bg-background px-3 pb-6 pt-5 md:hidden">
+  <div className="mx-auto w-full max-w-[360px]">
+    <div className="flex flex-col items-center rounded-2xl border bg-card p-5 shadow-sm">
+      <div className="flex justify-center">
+        <Logo width="110px" height="110px" />
+      </div>
 
-          {/* Información del usuario */}
-          <div className="mt-2 w-full">
-            <UserInfo user={user} isAdmin={isAdmin} />
-          </div>
+      <div className="mt-3 w-full">
+        <UserInfo user={user} isAdmin={isAdmin} />
+      </div>
 
-          {/* Separador */}
-          <div className="my-2 h-px w-full bg-border" />
+      <div className="my-3 h-px w-full bg-border" />
 
-          {/* Menú */}
-          <SidebarMenu />
-        </div>
-      </aside>
+      <SidebarMenu />
+    </div>
+  </div>
+</aside>
 
       {/* TABLET Y ESCRITORIO */}
       <aside
