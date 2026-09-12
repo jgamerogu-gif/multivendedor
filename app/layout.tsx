@@ -1,3 +1,4 @@
+import { Toaster } from "@/components/ui/sonner";
 import type { Metadata } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
 
@@ -18,7 +19,9 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="es" suppressHydrationWarning>
+
         <body>
+          
           <ThemeProvider
             attribute="class"
             defaultTheme="system"
@@ -26,8 +29,10 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             {children}
+            <Toaster richColors position="top-right" />
           </ThemeProvider>
         </body>
+
       </html>
     </ClerkProvider>
   );
