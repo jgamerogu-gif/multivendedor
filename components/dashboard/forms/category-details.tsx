@@ -12,6 +12,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import ImageUpload from "@/components/dashboard/shared/image-upload";
 
 import type { Category } from "@/lib/generated/prisma/client";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -208,10 +209,11 @@ const onDelete = async () => {
                 <FormLabel>Imagen</FormLabel>
 
                 <FormControl>
-                  <Input
-                    placeholder="https://ejemplo.com/imagen.jpg"
-                    {...field}
-                  />
+                 <ImageUpload
+                  value={field.value ? [field.value] : []}
+                  onChange={(url) => field.onChange(url)}
+                  onRemove={() => field.onChange("")}
+                />
                 </FormControl>
 
                 <FormMessage />

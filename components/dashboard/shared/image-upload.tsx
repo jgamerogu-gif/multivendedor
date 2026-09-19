@@ -38,7 +38,31 @@ const ImageUpload = ({
 
 
 return (
-  <div>
+  <div className="relative min-h-12">
+
+  {value.map((url) => (
+  <div
+    key={url}
+    className="relative mb-4 h-40 w-40 overflow-hidden rounded-md border"
+  >
+    <Image
+      src={url}
+      alt="Imagen subida"
+      fill
+      sizes="160px"
+      className="object-cover"
+/>
+
+    <button
+      type="button"
+      onClick={() => onRemove(url)}
+      className="absolute right-2 top-2 rounded-md bg-red-500 px-2 py-1 text-xs text-white"
+    >
+      Eliminar
+    </button>
+  </div>
+))}
+
   <CldUploadWidget
   onSuccess={onUpload}
   uploadPreset="multivendedor_upload"
@@ -50,15 +74,15 @@ return (
 
   return (
     <>
-      <button
+<button
   type="button"
-  className="absolute right-0 bottom-6 flex items-center font-medium text-[17px]"
+  className="flex h-12 w-full items-center justify-center rounded-md border bg-background text-foreground"
   disabled={disabled}
   onClick={onClick}
 >
   <svg
     viewBox="0 0 640 512"
-    fill="white"
+    fill="currentColor"
     height="1em"
     xmlns="http://www.w3.org/2000/svg"
   >
