@@ -90,14 +90,13 @@ const onSubmit = async (values: CategoryFormValues) => {
         : "Categoría creada correctamente"
     );
 
-    if (!data) {
-      form.reset({
-        name: "",
-        image: "",
-        url: "",
-        featured: false,
-      });
+    if (data) {
+    router.refresh();
+    } else {
+    router.push("/dashboard/admin/categories");
+    router.refresh();
     }
+
   } catch (error) {
     const message =
       error instanceof Error
@@ -264,8 +263,15 @@ const onDelete = async () => {
           />
 
           <div className="flex items-center gap-3">
-            <Button type="submit">
-              {data ? "Guardar cambios" : "Crear categoría"}
+            <Button
+              type="submit"
+              disabled={form.formState.isSubmitting}
+              >
+              {form.formState.isSubmitting
+                ? "Guardando..."
+                : data
+                ? "Guardar cambios"
+                : "Crear categoría"}
             </Button>
 
             {data && (
