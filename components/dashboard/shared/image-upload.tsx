@@ -45,13 +45,20 @@ return (
     key={url}
     className="relative mb-4 h-40 w-40 overflow-hidden rounded-md border"
   >
-    <Image
-      src={url}
-      alt="Imagen subida"
-      fill
-      sizes="160px"
-      className="object-cover"
-/>
+  
+{url.includes("ejemplo.com") ? (
+  <div className="flex h-full w-full items-center justify-center bg-muted p-3 text-center text-sm text-muted-foreground">
+    Imagen de ejemplo. Sube una imagen real.
+  </div>
+) : (
+  <Image
+    src={url}
+    alt="Imagen subida"
+    fill
+    sizes="160px"
+    className="object-cover"
+  />
+)}
 
     <button
       type="button"

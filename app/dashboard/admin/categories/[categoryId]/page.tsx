@@ -1,5 +1,6 @@
+
 import CategoryDetails from "@/components/dashboard/forms/category-details";
-import { db } from "@/lib/db";
+import { getCategoryById } from "@/queries/category";
 import { notFound } from "next/navigation";
 
 interface CategoryPageProps {
@@ -13,11 +14,7 @@ export default async function CategoryPage({
 }: CategoryPageProps) {
   const { categoryId } = await params;
 
-  const category = await db.category.findUnique({
-    where: {
-      id: categoryId,
-    },
-  });
+  const category = await getCategoryById(categoryId);
 
   if (!category) {
     notFound();
