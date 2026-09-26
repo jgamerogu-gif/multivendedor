@@ -1,12 +1,21 @@
 
 "use client";
 
+import { DataTable } from "@/components/ui/data-table";
+
+import {
+  categoriesColumns,
+  type Category,
+} from "@/components/dashboard/tables/categories-columns";
+
 import { useMemo, useState } from "react";
-import Link from "next/link";
+
 import { Search } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import Link from "next/link";
 
 interface Category {
   id: string;
@@ -25,15 +34,33 @@ export default function CategoriesTable({
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const pageSize = 10;
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+
+  const [featuredFilter, setFeaturedFilter] = useState<
+  "all" | "featured" | "normal"
+  >("all");
   const filteredCategories = useMemo(() => {
   const term = search.trim().toLowerCase();
 
-    return categories.filter(
-      (category) =>
+  return categories
+    .filter((category) => {
+      const matchesSearch =
         category.name.toLowerCase().includes(term) ||
-        category.url.toLowerCase().includes(term)
+        category.url.toLowerCase().includes(term);
+
+      const matchesFeatured =
+        featuredFilter === "all" ||
+        (featuredFilter === "featured" && category.featured) ||
+        (featuredFilter === "normal" && !category.featured);
+
+      return matchesSearch && matchesFeatured;
+    })
+    .sort((a, b) =>
+      sortOrder === "asc"
+        ? a.name.localeCompare(b.name, "es")
+        : b.name.localeCompare(a.name, "es")
     );
-  }, [categories, search]);
+}, [categories, search, featuredFilter, sortOrder]);
 
    
   const totalPages = Math.max(
@@ -47,14 +74,16 @@ export default function CategoriesTable({
   );
 
   return (
-     
-    <div className="space-y-4">
-      {/* Aquí continúa tu buscador y el resto del JSX */}
-      <div className="relative w-full sm:max-w-sm">
-     <Search
-          className="absolute left-3 top-1/2
-          h-4 w-4 -translate-y-1/2
-          text-muted-foreground"
+  <div className="space-y-4">
+
+    {/* Buscador y filtros */}
+    <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
+
+      {/* Buscador */}
+      <div className="relative w-full lg:max-w-sm">
+        <Search
+          className="absolute left-3 top-1/2 h-4 w-4
+          -translate-y-1/2 text-muted-foreground"
         />
 
         <Input
@@ -64,61 +93,105 @@ export default function CategoriesTable({
           onChange={(event) => {
             setSearch(event.target.value);
             setPage(1);
-            }}
+          }}
           className="pl-9"
         />
       </div>
 
+      {/* Filtros */}
+      <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+
+        <select
+          value={featuredFilter}
+          onChange={(event) => {
+            setFeaturedFilter(
+              event.target.value as "all" | "featured" | "normal"
+            );
+            setPage(1);
+          }}
+          aria-label="Filtrar categorías"
+          className="h-9 w-full rounded-md border bg-background px-3 text-sm sm:w-auto"
+        >
+          <option value="all">Todas las categorías</option>
+          <option value="featured">Destacadas</option>
+          <option value="normal">Normales</option>
+        </select>
+
+        <select
+          value={sortOrder}
+          onChange={(event) => {
+            setSortOrder(event.target.value as "asc" | "desc");
+            setPage(1);
+          }}
+          aria-label="Ordenar categorías"
+          className="h-9 w-full rounded-md border bg-background px-3 text-sm sm:w-auto"
+        >
+          <option value="asc">Nombre: A - Z</option>
+          <option value="desc">Nombre: Z - A</option>
+        </select>
+
+      </div>
+    </div>
+
+
+
       {/* Listado de categorías */}
-      <div className="overflow-hidden rounded-md border">
-        {filteredCategories.length === 0 ? (
-          <div className="p-6 text-sm text-muted-foreground">
-            {categories.length === 0
-              ? "No hay categorías registradas."
-              : "No se encontraron categorías."}
-          </div>
-        ) : (
-          <div className="divide-y">
-            {paginatedCategories.map((category) => (
-              <div
-                key={category.id}
-                className="flex flex-col gap-3 p-4
-                sm:flex-row sm:items-center
-                sm:justify-between"
-              >
-                <div className="min-w-0">
-                  <p className="break-words font-medium">
-                    {category.name}
-                  </p>
+      {/* Tabla reutilizable de categorías */}
+      
+    
+{/* Vista móvil: tarjetas */}
+<div className="space-y-3 md:hidden">
+  {paginatedCategories.map((category) => (
+    <div
+      key={category.id}
+      className="min-w-0 space-y-3 rounded-xl border bg-card p-4 shadow-sm"
+    >
+      <div className="flex flex-wrap items-start justify-between gap-2">
+        <h3 className="min-w-0 break-words font-semibold">
+          {category.name}
+        </h3>
 
-                  <p className="break-all text-sm text-muted-foreground">
-                    /{category.url}
-                  </p>
-                </div>
-
-                <div className="flex shrink-0 items-center gap-3">
-                  <span className="text-sm">
-                    {category.featured
-                      ? "Destacada"
-                      : "Normal"}
-                  </span>
-
-                 <Link
-                    href={`/dashboard/admin/categories/${category.id}`}
-                    >
-                        <Button variant="outline" size="sm">
-                         Editar
-                        </Button>
-                </Link>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+        <Badge variant="secondary">
+          {category.featured ? "Destacada" : "Normal"}
+        </Badge>
       </div>
 
-   
-<p className="text-xs text-muted-foreground">
+      <p className="break-all text-sm text-muted-foreground">
+        /{category.url}
+      </p>
+
+      
+<Link
+  href={`/dashboard/admin/categories/${category.id}`}
+  className="inline-flex h-9 w-full items-center justify-center rounded-md 
+  border px-4 text-sm font-medium transition-colors hover:bg-accent"
+>
+  Editar
+</Link>
+
+    </div>
+  ))}
+</div>
+
+{/* Vista tablet y escritorio: tabla reutilizable */}
+<div className="hidden min-w-0 md:block">
+  <DataTable
+    columns={categoriesColumns}
+    data={paginatedCategories}
+  />
+</div>
+
+{/* Mensaje cuando no existen resultados */}
+{filteredCategories.length === 0 && (
+  <div className="rounded-lg border p-6 text-center text-sm text-muted-foreground">
+    {categories.length === 0
+      ? "No hay categorías registradas."
+      : "No se encontraron categorías."}
+  </div>
+)}
+
+
+  <p className="text-xs text-muted-foreground">
   Mostrando{" "}
   {filteredCategories.length === 0
     ? 0
