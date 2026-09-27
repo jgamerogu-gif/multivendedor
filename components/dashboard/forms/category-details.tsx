@@ -262,28 +262,33 @@ const onDelete = async () => {
             )}
           />
 
-          <div className="flex items-center gap-3">
-            <Button
-              type="submit"
-              disabled={form.formState.isSubmitting}
-              >
-              {form.formState.isSubmitting
-                ? "Guardando..."
-                : data
-                ? "Guardar cambios"
-                : "Crear categoría"}
-            </Button>
+        
+  <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+    <Button
+    type="submit"
+    disabled={form.formState.isSubmitting}
+    className="w-full sm:w-auto"
+    >
+    {form.formState.isSubmitting
+      ? "Guardando..."
+      : data
+        ? "Guardar cambios"
+        : "Crear categoría"}
+  </Button>
 
-            {data && (
-           <Button
-            type="button"
-            variant="destructive"
-           onClick={onDelete}
-          >
-             Eliminar categoría
-        </Button>
-        )}
-      </div>
+  {data && (
+    <Button
+      type="button"
+      variant="destructive"
+      onClick={onDelete}
+      disabled={form.formState.isSubmitting}
+      className="w-full sm:w-auto"
+    >
+      Eliminar categoría
+    </Button>
+  )}
+  </div>
+
 
         </form>
       </Form>

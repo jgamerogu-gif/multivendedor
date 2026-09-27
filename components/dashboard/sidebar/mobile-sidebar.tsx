@@ -125,7 +125,7 @@ export default function MobileSidebar() {
             {/* Enlaces existentes */}
             <nav
               aria-label="Navegación principal"
-              className="flex-1"
+              className="min-h-0 flex-1 overflow-y-auto"
             >
               <SidebarLinks
                 onNavigate={() => setOpen(false)}
@@ -133,7 +133,7 @@ export default function MobileSidebar() {
             </nav>
 
             {/* Perfil */}
-            <div className="mt-auto border-t pt-5 pb-6">
+            <div className="mt-auto shrink-0 border-t pt-5 pb-10">
               <div className="flex min-w-0 items-center gap-3">
                 <UserButton />
 
