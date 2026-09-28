@@ -1,6 +1,7 @@
 
 
 "use client";
+import Image from "next/image";
 
 import type { ColumnDef } from "@tanstack/react-table";
 
@@ -9,11 +10,28 @@ import { CategoryActions } from "./category-actions";
 export interface Category {
   id: string;
   name: string;
+  image: string;
   url: string;
   featured: boolean;
 }
 
 export const categoriesColumns: ColumnDef<Category>[] = [
+  {
+  accessorKey: "image",
+  header: "Imagen",
+  cell: ({ row }) => (
+    <div className="relative size-14 overflow-hidden rounded-xl border bg-muted">
+      <Image
+        src={row.original.image}
+        alt={`Imagen de ${row.original.name}`}
+        fill
+        sizes="56px"
+        className="object-cover"
+      />
+    </div>
+  ),
+},
+
   {
     accessorKey: "name",
     header: "Nombre",

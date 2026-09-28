@@ -66,16 +66,18 @@ const onSubmit = async (values: CategoryFormValues) => {
       body: JSON.stringify(values),
     });
 
-    if (!response.ok) {
-      const message = await response.text();
+   if (!response.ok) {
+  const message = await response.text();
 
-      throw new Error(
-        message ||
-          (data
-            ? "No se pudo actualizar la categoría"
-            : "No se pudo crear la categoría")
-      );
-    }
+  toast.error(
+    message ||
+      (data
+        ? "No se pudo actualizar la categoría"
+        : "No se pudo crear la categoría")
+  );
+
+  return;
+}
 
     const category = await response.json();
 

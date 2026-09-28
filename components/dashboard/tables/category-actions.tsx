@@ -21,10 +21,12 @@ import type { Category } from "./categories-columns";
 
 interface CategoryActionsProps {
   category: Category;
+   variant?: "menu" | "buttons";
 }
 
 export function CategoryActions({
   category,
+  variant = "menu",
 }: CategoryActionsProps) {
   const router = useRouter();
 
@@ -69,51 +71,78 @@ export function CategoryActions({
 
   return (
     <>
-      <DropdownMenu>
-        <DropdownMenuTrigger
-          aria-label={`Acciones de ${category.name}`}
-          className="
-            inline-flex size-9 items-center
-            justify-center rounded-md
-            hover:bg-muted
-            focus-visible:outline-none
-            focus-visible:ring-2
-            focus-visible:ring-ring
-          "
+      {variant === "buttons" ? (
+  <div className="grid w-full grid-cols-2 gap-2">
+    <button
+      type="button"
+      onClick={() =>
+        router.push(
+          `/dashboard/admin/categories/${category.id}`
+        )
+      }
+      className="
+        inline-flex min-h-10 items-center justify-center
+        gap-2 rounded-md border px-3 text-sm font-medium
+        transition-colors hover:bg-accent
+      "
+    >
+      <Pencil className="size-4" />
+      Editar
+    </button>
+
+    <button
+      type="button"
+      onClick={() => setConfirmOpen(true)}
+      className="
+        inline-flex min-h-10 items-center justify-center
+        gap-2 rounded-md border border-destructive/40
+        px-3 text-sm font-medium text-destructive
+        transition-colors hover:bg-destructive/10
+      "
+    >
+      <Trash2 className="size-4" />
+      Eliminar
+    </button>
+  </div>
+) : (
+  <DropdownMenu>
+    <DropdownMenuTrigger
+      aria-label={`Acciones de ${category.name}`}
+      className="
+        inline-flex size-9 items-center justify-center
+        rounded-md hover:bg-muted
+      "
+    >
+      <MoreHorizontal className="size-5" />
+    </DropdownMenuTrigger>
+
+    <DropdownMenuContent align="end">
+      <DropdownMenuGroup>
+        <DropdownMenuLabel>Acciones</DropdownMenuLabel>
+        <DropdownMenuSeparator />
+
+        <DropdownMenuItem
+          onClick={() =>
+            router.push(
+              `/dashboard/admin/categories/${category.id}`
+            )
+          }
         >
-          <MoreHorizontal
-            className="h-5 w-5"
-            aria-hidden="true"
-          />
-        </DropdownMenuTrigger>
-
-        <DropdownMenuContent align="end">
-          <DropdownMenuGroup>
-            <DropdownMenuLabel>
-              Acciones
-            </DropdownMenuLabel>
-
-            <DropdownMenuSeparator />
-
-          <DropdownMenuItem
-            onClick={() =>
-            router.push(`/dashboard/admin/categories/${category.id}`)
-            }
-            >
-            <Pencil className="mr-2 size-4" />
-            Editar
+          <Pencil className="mr-2 size-4" />
+          Editar
         </DropdownMenuItem>
 
-            <DropdownMenuItem
-              onClick={() => setConfirmOpen(true)}
-              className="text-destructive"
-            >
-              <Trash2 className="mr-2 h-4 w-4" />
-              Eliminar
-            </DropdownMenuItem>
-          </DropdownMenuGroup>
-        </DropdownMenuContent>
-      </DropdownMenu>
+        <DropdownMenuItem
+          onClick={() => setConfirmOpen(true)}
+          className="text-destructive"
+        >
+          <Trash2 className="mr-2 size-4" />
+          Eliminar
+        </DropdownMenuItem>
+      </DropdownMenuGroup>
+    </DropdownMenuContent>
+  </DropdownMenu>
+)}
 
       {confirmOpen && (
         <div

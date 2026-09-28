@@ -1,6 +1,8 @@
 
 "use client";
+import { CategoryActions } from "./category-actions";
 
+import Image from "next/image";
 import { DataTable } from "@/components/ui/data-table";
 
 import {
@@ -17,12 +19,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 
-interface Category {
-  id: string;
-  name: string;
-  url: string;
-  featured: boolean;
-}
+
 
 interface CategoriesTableProps {
   categories: Category[];
@@ -147,30 +144,59 @@ export default function CategoriesTable({
       className="min-w-0 space-y-3 rounded-xl border bg-card p-4 shadow-sm"
     >
       <div className="flex flex-wrap items-start justify-between gap-2">
-        <h3 className="min-w-0 break-words font-semibold">
-          {category.name}
-        </h3>
+        
+
+        <div className="flex items-center gap-4">
+        {/* Imagen de la categoría */}
+        <div className="relative size-20 shrink-0 overflow-hidden rounded-xl border bg-muted">
+         {category.image ? (
+        <Image
+        src={category.image}
+        alt={`Imagen de ${category.name}`}
+        fill
+        sizes="80px"
+        className="object-cover"
+      />
+    ) : (
+      <div className="flex h-full items-center justify-center text-xs text-muted-foreground">
+        Sin imagen
+      </div>
+    )}
+  </div>
+
+  {/* Nombre y URL */}
+  <div className="min-w-0">
+    <h3 className="font-semibold">{category.name}</h3>
+    <p className="text-sm text-muted-foreground">
+      /{category.url}
+    </p>
+  </div>
+</div>
+
+         
+        
 
         <Badge variant="secondary">
           {category.featured ? "Destacada" : "Normal"}
         </Badge>
       </div>
 
-      <p className="break-all text-sm text-muted-foreground">
-        /{category.url}
-      </p>
+     
 
       
-<Link
-  href={`/dashboard/admin/categories/${category.id}`}
-  className="inline-flex h-9 w-full items-center justify-center rounded-md 
-  border px-4 text-sm font-medium transition-colors hover:bg-accent"
->
-  Editar
-</Link>
+   <div className="flex flex-col gap-2">
+ 
 
-    </div>
-  ))}
+  <div className="flex justify-end">
+    <CategoryActions
+    category={category}
+    variant="buttons"
+  />
+  </div>
+</div>
+
+     </div>
+   ))}
 </div>
 
 {/* Vista tablet y escritorio: tabla reutilizable */}
