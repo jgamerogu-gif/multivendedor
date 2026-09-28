@@ -137,7 +137,14 @@ export default function CategoriesTable({
       
     
 {/* Vista móvil: tarjetas */}
-<div className="space-y-3 md:hidden">
+<div
+  className="
+    grid grid-cols-1 gap-3
+    sm:grid-cols-2
+    min-[900px]:grid-cols-3
+    xl:hidden
+  "
+>
   {paginatedCategories.map((category) => (
     <div
       key={category.id}
@@ -200,7 +207,7 @@ export default function CategoriesTable({
 </div>
 
 {/* Vista tablet y escritorio: tabla reutilizable */}
-<div className="hidden min-w-0 md:block">
+<div className="hidden min-w-0 xl:block">
   <DataTable
     columns={categoriesColumns}
     data={paginatedCategories}

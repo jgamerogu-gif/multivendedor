@@ -48,7 +48,7 @@ export default function MobileSidebar() {
   }, [pathname]);
 
   return (
-    <div className="md:hidden">
+    <div className="xl:hidden">
       <Button
         ref={menuButtonRef}
         variant="outline"
@@ -62,7 +62,7 @@ export default function MobileSidebar() {
       </Button>
 
       {open && (
-        <div className="fixed inset-0 z-[100] md:hidden">
+     <div className="fixed inset-0 z-[100] xl:hidden">
           {/* Fondo oscuro */}
           <button
             type="button"

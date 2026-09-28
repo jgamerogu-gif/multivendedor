@@ -3,8 +3,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   allowedDevOrigins: [
-    "unenvi​ed-canopy-repossess.ngrok-free.dev",
-    "192.168.1.3",
+    "unenvied-canopy-repossess.ngrok-free.dev",
   ],
 
   images: {

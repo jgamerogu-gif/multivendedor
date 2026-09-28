@@ -15,15 +15,14 @@ export default async function Sidebar({
   const user = await currentUser();
 
   return (
-    <aside
-      className="
-        fixed inset-y-0 left-0 z-40
-        hidden flex-col overflow-y-auto
-        border-r bg-background p-4
-        md:flex md:w-[240px]
-        lg:w-[300px]
-      "
-    >
+ <aside
+  className="
+    fixed inset-y-0 left-0 z-40
+    hidden flex-col overflow-y-auto
+    border-r bg-background p-4
+    xl:flex xl:w-[300px]
+  "
+>
       <div className="flex justify-center">
         <Logo width="150px" height="150px" />
       </div>

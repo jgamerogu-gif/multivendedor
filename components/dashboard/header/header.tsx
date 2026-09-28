@@ -5,17 +5,16 @@ import MobileSidebar from "@/components/dashboard/sidebar/mobile-sidebar";
 
 export default function Header() {
   return (
-    <header
-      className="
-        fixed inset-x-0 top-0 z-30
-        flex h-[75px] items-center
-        justify-between border-b bg-background
-        px-4
-        md:left-[240px]
-        md:justify-end
-        lg:left-[300px]
-      "
-    >
+   <header
+  className="
+    fixed inset-x-0 top-0 z-30
+    h-14 xl:h-[75px] items-center
+    justify-between border-b bg-background
+    px-4
+    xl:left-[300px]
+    xl:justify-end
+  "
+>
       {/* Botón del menú: solo celulares */}
       <MobileSidebar />
 
