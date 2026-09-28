@@ -5,10 +5,10 @@ import MobileSidebar from "@/components/dashboard/sidebar/mobile-sidebar";
 
 export default function Header() {
   return (
-   <header
+ <header
   className="
     fixed inset-x-0 top-0 z-30
-    h-14 xl:h-[75px] items-center
+    flex h-[75px] items-center
     justify-between border-b bg-background
     px-4
     xl:left-[300px]
