@@ -8,6 +8,7 @@ import {
   LayoutDashboard,
   Package,
   Tags,
+  ListTree,
   ShoppingCart,
   Users,
   Settings,
@@ -33,6 +34,13 @@ const menuItems = [
     href: "/dashboard/admin/categories",
     icon: Tags,
   },
+
+  {
+  label: "Subcategorías",
+  href: "/dashboard/admin/subcategories",
+  icon: ListTree,
+  },
+
   {
     label: "Pedidos",
     href: "/dashboard/admin/orders",
