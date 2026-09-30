@@ -111,6 +111,26 @@ export async function POST(req: Request) {
       );
     }
 
+
+    // 6. Verificar que no exista el mismo nombre dentro de la misma categoría.
+    const existingSubcategory = await db.subCategory.findFirst({
+    where: {
+    name,
+    categoryId,
+    },
+  });
+
+  if (existingSubcategory) {
+    return new NextResponse(
+    "Ya existe una subcategoría con ese nombre en esta categoría",
+     {
+      status: 409,
+      }
+    );
+  }
+
+
+
     // 7. Crear la subcategoría.
     const subcategory = await db.subCategory.create({
       data: {
