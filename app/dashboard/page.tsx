@@ -1,26 +1,41 @@
-import { currentUser } from "@clerk/nextjs/server";
+import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 
-export default async function DashboardPage() {
-  const user = await currentUser();
+import { db } from "@/lib/db";
 
-  if (!user) {
+export default async function DashboardPage() {
+  const { userId } = await auth();
+
+  // No autenticado
+  if (!userId) {
     redirect("/sign-in");
   }
 
-  const role = user.privateMetadata?.role;
+  // Buscamos el usuario real en nuestra base de datos
+  const dbUser = await db.user.findUnique({
+    where: {
+      clerkId: userId,
+    },
+    select: {
+      role: true,
+    },
+  });
 
-  if (!role || role === "USER") {
+  // El usuario todavía no existe en nuestra BD
+  if (!dbUser) {
     redirect("/");
   }
 
-  if (role === "ADMIN") {
+  // Administrador
+  if (dbUser.role === "ADMIN") {
     redirect("/dashboard/admin");
   }
 
-  if (role === "SELLER") {
+  // Vendedor
+  if (dbUser.role === "SELLER") {
     redirect("/dashboard/seller");
   }
 
+  // Usuario normal
   redirect("/");
 }

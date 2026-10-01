@@ -1,4 +1,5 @@
 import SubCategoryDetails from "@/components/dashboard/forms/subcategory-details";
+import BackLink from "@/components/shared/back-link";
 import { db } from "@/lib/db";
 
 export default async function NewSubcategoryPage() {
@@ -8,5 +9,14 @@ export default async function NewSubcategoryPage() {
     },
   });
 
-  return <SubCategoryDetails categories={categories} />;
+  return (
+    <div className="space-y-6">
+      <BackLink
+        href="/dashboard/admin/subcategories"
+        label="Subcategorías"
+      />
+
+      <SubCategoryDetails categories={categories} />
+    </div>
+  );
 }

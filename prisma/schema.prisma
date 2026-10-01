@@ -14,12 +14,21 @@ enum Role {
   SELLER
 }
 
+enum StoreStatus {
+  PENDING
+  ACTIVE
+  BANNED
+  DISABLED
+}
+
 model User {
   id      String @id @default(uuid())
   clerkId String @unique
   name    String
   email   String @unique
   role    Role   @default(USER)
+
+  stores Store[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -70,4 +79,35 @@ model Product {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Store {
+  id          String @id @default(uuid())
+  name        String
+  description String @db.Text
+  email       String @unique
+  phone       String
+  url         String @unique
+
+  logo  String
+  cover String
+
+  status        StoreStatus @default(PENDING)
+  averageRating Float       @default(0)
+  featured      Boolean     @default(false)
+
+  returnPolicy String? @db.Text
+
+  defaultShippingService String?
+  defaultShippingFee     Float?
+  defaultDeliveryTimeMin Int?
+  defaultDeliveryTimeMax Int?
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
 }

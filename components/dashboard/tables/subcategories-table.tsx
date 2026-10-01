@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import Image from "next/image";
 import { Search } from "lucide-react";
+import Link from "next/link";
 
 import { DataTable } from "@/components/ui/data-table";
 import { Button } from "@/components/ui/button";
@@ -130,6 +131,15 @@ export default function SubcategoriesTable({
           </select>
         </div>
       </div>
+
+      {/* Crear subcategoría en página independiente */}
+  <div className="flex justify-end">
+  <Link href="/dashboard/admin/subcategories/new">
+    <Button>
+      + Crear en nueva página
+    </Button>
+  </Link>
+</div>
 
       {/* Vista móvil y tablet: tarjetas */}
       <div

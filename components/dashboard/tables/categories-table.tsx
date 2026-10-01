@@ -130,6 +130,14 @@ export default function CategoriesTable({
       </div>
     </div>
 
+{/* Crear categoría en página independiente */}
+<div className="flex justify-end">
+  <Link href="/dashboard/admin/categories/new">
+    <Button>
+      + Crear  nueva página
+    </Button>
+  </Link>
+</div>
 
 
       {/* Listado de categorías */}
@@ -154,7 +162,9 @@ export default function CategoriesTable({
         
 
         <div className="flex items-center gap-4">
+          
         {/* Imagen de la categoría */}
+
         <div className="relative size-20 shrink-0 overflow-hidden rounded-xl border bg-muted">
          {category.image ? (
         <Image
