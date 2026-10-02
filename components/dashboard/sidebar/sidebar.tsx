@@ -4,6 +4,7 @@ import { currentUser } from "@clerk/nextjs/server";
 import Logo from "@/components/shared/logo";
 import UserInfo from "@/components/dashboard/sidebar/user-info";
 import SidebarLinks from "./sidebar-links";
+import NavSeller from "./nav-seller";
 
 interface SidebarProps {
   isAdmin: boolean;
@@ -31,7 +32,7 @@ export default async function Sidebar({
 
       <div className="my-2 h-px w-full bg-border" />
 
-      <SidebarLinks />
+      {isAdmin ? <SidebarLinks /> : <NavSeller />}
     </aside>
   );
 }

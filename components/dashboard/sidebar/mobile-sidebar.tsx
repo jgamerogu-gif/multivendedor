@@ -9,8 +9,15 @@ import Image from "next/image";
 
 import { Button } from "@/components/ui/button";
 import SidebarLinks from "./sidebar-links";
+import NavSeller from "./nav-seller";
 
-export default function MobileSidebar() {
+interface MobileSidebarProps {
+  isAdmin?: boolean;
+}
+
+export default function MobileSidebar({
+  isAdmin = true,
+}: MobileSidebarProps) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const { user } = useUser();
@@ -103,7 +110,7 @@ export default function MobileSidebar() {
                     Multivendedor
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    Administración
+                    {isAdmin ? "Administración" : "Panel de vendedor"}
                   </p>
                 </div>
               </div>
@@ -122,18 +129,20 @@ export default function MobileSidebar() {
 
             <div className="my-5 h-px bg-border" />
 
-            {/* Enlaces existentes */}
-            <nav
-              aria-label="Navegación principal"
-              className="min-h-0 flex-1 overflow-y-auto"
-            >
-              <SidebarLinks
-                onNavigate={() => setOpen(false)}
-              />
-            </nav>
+        {/* Enlaces existentes */}
+    <nav
+      aria-label="Navegación principal"
+      className="min-h-0 flex-1 overflow-y-auto"
+    >
+      {isAdmin ? (
+        <SidebarLinks onNavigate={() => setOpen(false)} />
+      ) : (
+      <NavSeller onNavigate={() => setOpen(false)} />
+      )}
+      </nav>
 
-            {/* Perfil */}
-            <div className="mt-auto shrink-0 border-t pt-5 pb-10">
+{/* Perfil */}
+<div className="mt-auto shrink-0 border-t pt-5 pb-10">
               <div className="flex min-w-0 items-center gap-3">
                 <UserButton />
 

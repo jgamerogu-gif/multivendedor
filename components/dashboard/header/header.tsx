@@ -3,7 +3,15 @@ import { UserButton } from "@clerk/nextjs";
 import ThemeToggle from "@/components/shared/theme-toggle";
 import MobileSidebar from "@/components/dashboard/sidebar/mobile-sidebar";
 
-export default function Header() {
+
+interface HeaderProps {
+  isAdmin?: boolean;
+}
+
+export default function Header({
+  isAdmin = true,
+}: HeaderProps) {
+
   return (
  <header
   className="
@@ -16,7 +24,7 @@ export default function Header() {
   "
 >
       {/* Botón del menú: solo celulares */}
-      <MobileSidebar />
+      <MobileSidebar isAdmin={isAdmin} />
 
       {/* Tema y cuenta */}
       <div className="flex items-center gap-3">
