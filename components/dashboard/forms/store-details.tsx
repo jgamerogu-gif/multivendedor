@@ -36,10 +36,7 @@ const formSchema = z.object({
     .min(10, "La descripción debe tener al menos 10 caracteres.")
     .max(1000, "La descripción no puede superar los 1000 caracteres."),
 
-  email: z
-    .string()
-    .trim()
-    .email("Ingresa un correo electrónico válido."),
+  email: z.string().trim().email("Ingresa un correo electrónico válido."),
 
   phone: z
     .string()
@@ -58,7 +55,7 @@ const formSchema = z.object({
     .max(100, "La URL no puede superar los 100 caracteres.")
     .regex(
       /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
-      "Usa solo letras minúsculas, números y guiones."
+      "Usa solo letras minúsculas, números y guiones.",
     ),
 
   featured: z.boolean(),
@@ -67,46 +64,73 @@ const formSchema = z.object({
 type StoreFormValues = z.infer<typeof formSchema>;
 
 const StoreDetails = ({ data }: StoreDetailsProps) => {
-  const router = useRouter(); 
+  const router = useRouter();
   const form = useForm<StoreFormValues>({
     resolver: zodResolver(formSchema),
-   defaultValues: {
-  name: data?.name ?? "",
-  description: data?.description ?? "",
-  email: data?.email ?? "",
-  phone: data?.phone ?? "",
-  logo: data?.logo ?? "",
-  cover: data?.cover ?? "",
-  url: data?.url ?? "",
-  featured: data?.featured ?? false,
-},
-  );
+    defaultValues: {
+      name: data?.name ?? "",
+      description: data?.description ?? "",
+      email: data?.email ?? "",
+      phone: data?.phone ?? "",
+      logo: data?.logo ?? "",
+      cover: data?.cover ?? "",
+      url: data?.url ?? "",
+      featured: data?.featured ?? false,
+    },
+  });
 
-const onSubmit = async (values: StoreFormValues) => {
-  console.log("Datos de la tienda:", values);
-};
+  const onSubmit = async (values: StoreFormValues) => {
+    if (!data?.id) {
+      toast.error("No se encontró la tienda");
+      return;
+    }
 
-return (
+    try {
+      const response = await fetch(`/api/stores/${data.id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(values),
+      });
+
+      if (!response.ok) {
+        const message = await response.text();
+        throw new Error(message || "No se pudo actualizar la tienda");
+      }
+
+      const updatedStore = await response.json();
+
+      console.log("Tienda actualizada:", updatedStore);
+
+      toast.success("Tienda actualizada correctamente");
+      router.refresh();
+    } catch (error) {
+      console.error("Error al actualizar la tienda:", error);
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Ocurrió un error al actualizar la tienda",
+      );
+    }
+  };
+
+  return (
     <div className="space-y-6">
       <div>
+        <h1 className="text-2xl font-semibold">
+          {data ? "Información de la tienda" : "Crear nueva tienda"}
+        </h1>
 
-       <h1 className="text-2xl font-semibold">
-      {data ? "Información de la tienda" : "Crear nueva tienda"}
-      </h1>
-
-    <p className="text-sm text-muted-foreground">
-    {data
-    ? "Actualiza la información y configuración de tu tienda."
-    : "Completa la información para configurar tu nueva tienda."}
-    </p>
-
+        <p className="text-sm text-muted-foreground">
+          {data
+            ? "Actualiza la información y configuración de tu tienda."
+            : "Completa la información para configurar tu nueva tienda."}
+        </p>
       </div>
 
       <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-6"
-        >
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <FormField
             control={form.control}
             name="name"
@@ -115,10 +139,7 @@ return (
                 <FormLabel>Nombre</FormLabel>
 
                 <FormControl>
-                  <Input
-                    placeholder="Ej. Electrónica"
-                    {...field}
-                  />
+                  <Input placeholder="Ej. Electrónica" {...field} />
                 </FormControl>
 
                 <FormMessage />
@@ -128,17 +149,40 @@ return (
 
           <FormField
             control={form.control}
-            name="image"
+            name="logo"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Imagen</FormLabel>
+                <FormLabel>Logo de la tienda</FormLabel>
 
                 <FormControl>
-                 <ImageUpload
-                  value={field.value ? [field.value] : []}
-                  onChange={(url) => field.onChange(url)}
-                  onRemove={() => field.onChange("")}
-                />
+                  <ImageUpload
+                    value={field.value ? [field.value] : []}
+                    type="profile"
+                    onChange={(url) => field.onChange(url)}
+                    onRemove={() => field.onChange("")}
+                  />
+                </FormControl>
+
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* Portada */}
+          <FormField
+            control={form.control}
+            name="cover"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Portada de la tienda</FormLabel>
+
+                <FormControl>
+                  <ImageUpload
+                    value={field.value ? [field.value] : []}
+                    type="cover"
+                    onChange={(url) => field.onChange(url)}
+                    onRemove={() => field.onChange("")}
+                  />
                 </FormControl>
 
                 <FormMessage />
@@ -154,10 +198,7 @@ return (
                 <FormLabel>URL</FormLabel>
 
                 <FormControl>
-                  <Input
-                    placeholder="electronica"
-                    {...field}
-                  />
+                  <Input placeholder="electronica" {...field} />
                 </FormControl>
 
                 <FormMessage />
@@ -178,48 +219,33 @@ return (
                 </FormControl>
 
                 <div className="space-y-1 leading-none">
-                  <FormLabel>Categoría destacada</FormLabel>
+                  <FormLabel>Tienda destacada</FormLabel>
 
                   <p className="text-sm text-muted-foreground">
-                    Mostrar esta categoría como destacada.
+                    Mostrar esta tienda como destacada.
                   </p>
                 </div>
               </FormItem>
             )}
           />
 
-        
-  <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-    <Button
-    type="submit"
-    disabled={form.formState.isSubmitting}
-    className="w-full sm:w-auto"
-    >
-    {form.formState.isSubmitting
-      ? "Guardando..."
-      : data
-        ? "Guardar cambios"
-        : "Crear categoría"}
-  </Button>
-
-  {data && (
-    <Button
-      type="button"
-      variant="destructive"
-      onClick={onDelete}
-      disabled={form.formState.isSubmitting}
-      className="w-full sm:w-auto"
-    >
-      Eliminar categoría
-    </Button>
-  )}
-  </div>
-
-
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+            <Button
+              type="submit"
+              disabled={form.formState.isSubmitting}
+              className="w-full sm:w-auto"
+            >
+              {form.formState.isSubmitting
+                ? "Guardando..."
+                : data
+                  ? "Guardar cambios"
+                  : "Crear categoría"}
+            </Button>
+          </div>
         </form>
       </Form>
     </div>
   );
 };
 
-export default CategoryDetails;
+export default StoreDetails;

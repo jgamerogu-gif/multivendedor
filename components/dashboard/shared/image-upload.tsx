@@ -18,7 +18,7 @@ const ImageUpload = ({
   onChange,
   onRemove,
   value,
-  type,
+  type = "standard",
   noPreview,
 }: ImageUploadProps) => {
   const [isMounted, setIsMounted] = useState(false);
@@ -38,15 +38,20 @@ const ImageUpload = ({
 
 
 return (
-  <div className="relative min-h-12">
-
+<div className="relative min-h-12">
   {value.map((url) => (
-  <div
-    key={url}
-    className="relative mb-4 h-40 w-40 overflow-hidden rounded-md border"
-  >
+    <div
+      key={url}
+      className={`relative mb-4 overflow-hidden border ${
+        type === "cover"
+          ? "h-40 w-full rounded-xl sm:h-52 lg:h-64"
+          : type === "profile"
+            ? "h-28 w-28 rounded-full sm:h-32 sm:w-32"
+            : "h-40 w-40 rounded-md"
+      }`}
+    >
   
-{url.includes("ejemplo.com") ? (
+{(url.includes("ejemplo.com") || url.includes("example.com")) ? (
   <div className="flex h-full w-full items-center justify-center bg-muted p-3 text-center text-sm text-muted-foreground">
     Imagen de ejemplo. Sube una imagen real.
   </div>
